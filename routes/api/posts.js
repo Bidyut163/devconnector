@@ -205,11 +205,11 @@ router.delete(
         ) {
           return res
             .status(404)
-            .json({ commentnotexist: "Comment does not exist" });
+            .json({ commentnotexists: "Comment does not exist" });
         }
 
         const removeIndex = post.comments
-          .map(item => item.user.toString())
+          .map(item => item._id.toString())
           .indexOf(req.params.comment_id);
 
         // Splice out of the array

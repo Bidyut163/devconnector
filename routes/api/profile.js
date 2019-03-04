@@ -5,7 +5,7 @@ const passport = require("passport");
 
 // Load Validation
 const validateProfileInput = require("../../validation/profile");
-const validateExperianceInput = require("../../validation/experiance");
+const validateExperienceInput = require("../../validation/experience");
 const validateEducationInput = require("../../validation/education");
 
 // Load Profile Model
@@ -47,6 +47,7 @@ router.get("/all", (req, res) => {
   const errors = {};
 
   Profile.find()
+    .populate("user", ["name", "avatar"])
     .then(profiles => {
       if (!profiles) {
         errors.noprofile = "There is no profiles";
@@ -164,14 +165,14 @@ router.post(
   }
 );
 
-// @route   POST /api/profile/experiance
-// @desc    Add experiance to profile
+// @route   POST /api/profile/experience
+// @desc    Add experience to profile
 // @access  Private
 router.post(
-  "/experiance",
+  "/experience",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const { errors, isValid } = validateExperianceInput(req.body);
+    const { errors, isValid } = validateExperienceInput(req.body);
 
     // Check Validation
     if (!isValid) {
@@ -191,7 +192,7 @@ router.post(
       };
 
       // Add to exp array
-      profile.experiance.unshift(newExp);
+      profile.experience.unshift(newExp);
 
       profile.save().then(profile => res.json(profile));
     });
@@ -217,7 +218,7 @@ router.post(
       const newEdu = {
         school: req.body.school,
         degree: req.body.degree,
-        fieldOfstudy: req.body.fieldOfstudy,
+        fieldofstudy: req.body.fieldofstudy,
         from: req.body.from,
         to: req.body.to,
         current: req.body.current,
@@ -232,21 +233,21 @@ router.post(
   }
 );
 
-// @route   DELETE /api/profile/experiance/:exp_id
-// @desc    Delete experiance from profile
+// @route   DELETE /api/profile/experience/:exp_id
+// @desc    Delete experience from profile
 // @access  Private
 router.delete(
-  "/experiance/:exp_id",
+  "/experience/:exp_id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     Profile.findOne({ user: req.user.id })
       .then(profile => {
-        const removeIndex = profile.experiance
+        const removeIndex = profile.experience
           .map(item => item.id)
           .indexOf(req.params.exp_id);
 
         // Splice out of the array
-        profile.experiance.splice(removeIndex, 1);
+        profile.experience.splice(removeIndex, 1);
 
         // Save
         profile.save().then(profile => res.json(profile));
